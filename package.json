@@ -1,17 +1,37 @@
 {
   "name": "wotblocks",
-  "private": true,
+  "author": "Jose Maza",
+  "files": [
+    "dist/*",
+    "src/*"
+  ],
+  "main": "./dist/wotblocks.umd.js",
+  "module": "./dist/wotblocks.es.js",
+  "exports": {
+    ".": {
+      "import": "./dist/wotblocks.es.js",
+      "require": "./dist/wotblocks.umd.js"
+    }
+  },
   "version": "0.0.0",
   "scripts": {
-    "dev": "vite",
     "build": "vite build",
-    "preview": "vite preview"
+    "storybook": "start-storybook -p 6006",
+    "build-storybook": "build-storybook"
   },
   "dependencies": {
     "vue": "^3.2.25"
   },
   "devDependencies": {
+    "@babel/core": "^7.17.5",
+    "@storybook/addon-actions": "^6.4.19",
+    "@storybook/addon-essentials": "^6.4.19",
+    "@storybook/addon-links": "^6.4.19",
+    "@storybook/vue3": "^6.4.19",
     "@vitejs/plugin-vue": "^2.2.0",
-    "vite": "^2.8.0"
+    "babel-loader": "^8.2.3",
+    "storybook-builder-vite": "^0.1.18",
+    "vite": "^2.8.0",
+    "vue-loader": "^16.8.3"
   }
 }
