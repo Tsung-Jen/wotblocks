@@ -1,3 +1,4 @@
-import BaseInput from './components/BaseInput.vue';
+import WotBlock from './components/Organisms/WotBlock.vue';
+import './index.css';
 
-export {BaseInput} 
+export {WotBlock} 
