@@ -30,7 +30,7 @@
       <!-- END of THING SPECIFICS -->
 
       <!-- PROPERTIES -->
-      <Accordion :title="'Properties'" :icon="'sports_esports'" id="properties">
+      <Accordion :title="'Properties'" :icon="'ballot'" id="properties">
         <ThingProperty
               v-for="(property, index) in thing.properties"
               :key="index"
@@ -48,6 +48,32 @@
       </Accordion>
 
       <!-- Actions -->
+      <Accordion :title="'Actions'" :icon="'sports_esports'" id="actions">
+        <div
+              v-for="(action, parent_index) in thing.actions"
+              :key="parent_index"
+            >
+              <ThingAction
+                :actionName="parent_index"
+                :actionObj="action"
+                @click="consumeAction"
+              />
+            </div>
+      </Accordion>
+
+      <!-- Events -->
+      <Accordion :title="'Events'" :icon="'notifications'" id="events">
+        <div
+              v-for="(event, parent_index) in thing.events"
+              :key="parent_index"
+            >
+              <WotState
+                v-model="tempEvent[parent_index]"
+                @change="listenToEventIfTrue($event, parent_index)"
+                :label="`${parent_index}`"
+              />
+            </div>
+      </Accordion>
       <!--<div class="wotcard__expansion">
         <div
               v-for="(action, parent_index) in thing.actions"
@@ -81,12 +107,13 @@
 
 <script>
 import Accordion from "../Atoms/Accordion.vue"
+import WotState from "../Atoms/WotState.vue"
 
 //import * as Core from "@node-wot/";
 //import * as WotHttp from "@node-wot/binding-http";
 //import ThingRootProperty from "@/components/ThingRootProperty";
 import ThingProperty from "./ThingProperty.vue";
-//import ThingAction from "..ThingAction/ThingAction";
+import ThingAction from "./ThingAction.vue";
 //import ThingToolbar from "./ThingToolbar";
 //import ModalDefaultConfiguration from "@/components/ModalDefaultConfiguration";
 
@@ -115,7 +142,8 @@ export default {
     //ThingRootProperty,
     Accordion,
     ThingProperty,
-    //ThingAction,
+    ThingAction,
+    WotState,
     //ThingToolbar,
     //ModalDefaultConfiguration,
   },
