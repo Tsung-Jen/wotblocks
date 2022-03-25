@@ -10,7 +10,7 @@
         <div class="accordion-spacer">
 
             <div class="accordion-begin">
-                <span v-if="icon" class="material-icons">{{icon}}</span>
+                <span v-if="icon" class="material-icons-outlined">{{icon}}</span>
                 <span class="accordion-title">{{title}}</span>
             </div>
             
