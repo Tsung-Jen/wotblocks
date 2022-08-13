@@ -8,15 +8,15 @@
 
     <!-- action has no input, / it is a default action or needs parameters -->
     <!-- ?drinkId=hotChocolate&size=s&quantity=5 -->
-    <div v-if="'uriVariables' in actionObj">
-      <!-- only for root actions -->
+
+    <!--<div v-if="'uriVariables' in actionObj">
       <button
         size="sm"
         class="full-width"
         color="green"
         @click="consumeAction(actionName, propvals)"
       >{{actionName}}</button>
-    </div>
+    </div>-->
 
     <div v-if="actionObj.type == 'string'">
       <BaseInput
@@ -135,6 +135,26 @@
           <!-- Type is very important, in order to know what to show. When type is boolean, you can have true,false props. REFER TO MANUAL -->
         </div>
       </div>
+    </div>
+    <div v-if="actionObj.uriVariables">
+      <button
+        class="full-width"
+        size="sm"
+        color="green"
+        @click="consumeAction(actionName, propvals)"
+      >{{actionName}}</button>
+      <!-- Actually, as far as I know, if an action has an input, it is ALWAYS of type object-->
+        <div
+          v-for="(uriVariable, index) in actionObj.uriVariables"
+          :key="index"
+        >
+          <ThingAction
+            :propvals="propvals"
+            :actionName="index"
+            :actionObj="uriVariable"
+            :index="index"
+          />
+        </div>
     </div>
   </div>
 </template>

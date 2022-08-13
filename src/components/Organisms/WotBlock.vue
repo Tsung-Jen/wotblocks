@@ -8,6 +8,7 @@
           @refresh-thing="refreshThing"
           @showConfigurationModal="showConfigurationModal"
         />-->
+      is reachable: {{availability}}
 
       <!-- REAL BEGINNING OF THING-->
       <!-- "second toolbar" -->
@@ -20,7 +21,7 @@
         </div>
           
         <div class="main-right">
-          <div class="main-subtitle">last updated</div> <div class="main-time">1 min ago</div>
+          <div class="main-subtitle">last updated</div> <div class="main-time">{{lastReachabilityTime}} ago</div>
         </div>
       </div>
         
@@ -48,6 +49,7 @@
       </Accordion>
 
       <!-- Actions -->
+ 
       <Accordion :title="'Actions'" :icon="'sports_esports'" id="actions">
         <div
               v-for="(action, parent_index) in thing.actions"
@@ -109,6 +111,7 @@
 import Accordion from "../Atoms/Accordion.vue"
 import WotState from "../Atoms/WotState.vue"
 
+import dateHelper from '../../utils/dateHelper'
 //import * as Core from "@node-wot/";
 //import * as WotHttp from "@node-wot/binding-http";
 //import ThingRootProperty from "@/components/ThingRootProperty";
@@ -147,11 +150,14 @@ export default {
     //ThingToolbar,
     //ModalDefaultConfiguration,
   },
-  computed: {},
+  computed: {
+  },
   data() {
     return {
       dialogConfiguration: false,
       availability: "connecting",
+      lastUpdate: "",
+      lastReachabilityTime: "",
       thing: {},
       properties: [],
       polling: {},
@@ -160,20 +166,12 @@ export default {
       eventSubscriptions: {},
       receivedEvents: ["asas", "asa"],
       messages: 0,
+      timer: null
     };
   },
   created() {
-    //let ckeditor = document.createElement('script');    ckeditor.setAttribute('src',"https://cdn.jsdelivr.net/npm/@node-wot/browser-bundle@latest/dist/wot-bundle.min.js");
-      //document.head.appendChild(ckeditor);
   },
   mounted() {
-
-    /*var script = document.createElement('script');
-    script.src = 'https://cdn.jsdelivr.net/npm/@node-wot/browser-bundle@latest/dist/wot-bundle.min.js';
-    script.onload = function () {
-        console.log("loadedd");
-    };
-    document.head.appendChild(script);*/
     let servient = new Wot.Core.Servient();
     servient.addClientFactory(new Wot.Http.HttpClientFactory());
     this.helpers = new Wot.Core.Helpers(servient);
@@ -181,21 +179,21 @@ export default {
     // 1st. first check whether I was provided with a webServient, or need to create a new one for this specific thing.
     servient.start().then((thingFactory) => {
       this.thingFactory = thingFactory;
-      console.log("thingfa: ", thingFactory);
       //this.checkAvailability();
       this.helpers
-        .fetch(this.wotTD)
+        .fetch(this.wotTD) // before this, check if a URL was provided or a TD. TODO
         .then((td) => {
-          console.log("normal td: ", td);
-          console.log("fetched once? ", this.wotTD);
           this.thingFactory
             .consume(td)
             .then((thing) => {
               this.thing = thing;
               //this.availability = "connecting";
-              console.log("consumed successfully, but? ", thing);
+              // New default behavior:
+              this.showInteractions(thing);
 
-              this.setupWoTBlockConfigurations(thing, this.config);
+              // Actually, here we should only check this method if we have provided a config.
+              //this.setupWoTBlockConfigurations(thing, this.config);
+
             }) // end of "td fetch"
             .catch((err) => {
               // This error happens when the url of a thing is not reachable. This is useful for servients that use node-wot
@@ -206,13 +204,22 @@ export default {
         })
         .catch((err) => {
           // This error happens when the url of a thing is not reachable. This is useful for servients that use node-wot
-          console.log("er: ", err);
+          // first attempt to reach the WoT Thing:
           // update availability:
           this.availability = "unavailable";
+          this.lastUpdate = new Date();
+          this.updateLastUpdateTime()
         });
     });
+
+    this.timer = setInterval(() => {
+      this.updateLastUpdateTime();
+    }, 30000)
   },
   methods: {
+    updateLastUpdateTime(){
+      this.lastReachabilityTime = dateHelper.timeSince(this.lastUpdate)
+    },
     listenToEventIfTrue(e, eventName) {
       console.log("what is th name? ", e);
       console.log("other ar ", eventName);
@@ -231,14 +238,10 @@ export default {
         );
       }
     },
-    //consumeProperty() {
-    //this.$emit("click", property, this.thingObj.id);
-    //},
-    showInteractions(thing) {
-      let td = thing.getThingDescription();
 
-      console.log("again: ", thing);
-      console.log("td ", td);
+    showInteractions(thing) {
+      let td = thing.getThingDescription(); 
+
       let properties = td.properties;
 
       //this.properties = td.properties; //http://192.168.2.128:8080/SenseHat
@@ -250,42 +253,16 @@ export default {
       var readAllProperties = new Promise((resolve, reject) => {
         // Each property of propertyNames needs to be consumed
         propertyNames.forEach(async (property, index, array) => {
-          //let triedproperty = property;
           try {
-            let consume = true;
             // this might not be necessary: (because we can check if we should display via specialProperties)
-
-            console.log(thing);
-            if (thing.hasThingConfiguration) {
-              if (thing.ThingConfiguration.specialProperties.length > 0) {
-                console.log("note that property might be an object");
-                var pass = thing.ThingConfiguration.specialProperties.findIndex(
-                  (elem) => elem.name == property
-                );
-                console.log(pass); // if pass is an index (aka, not -1), we could simply not render the property if it also says that isEnabled is false
-                if (pass > -1) {
-                  if (
-                    thing.ThingConfiguration.specialProperties[pass]
-                      .isEnabled === false
-                  ) {
-                    console.log("changed");
-                    consume = false;
-                    properties[property] = null; // null properties are checked after promise is resolved, below.
-                  }
-                }
-              }
-            }
-
-            if (consume) {
-              console.log("IT SKDNASKDNKAD A D SKD S");
               let consumedProperty = await thing.readProperty(property);
-              properties[property]["consumedProperty"] = consumedProperty;
+              console.log("consumed property: ", consumedProperty);
+              properties[property]["consumedProperty"] = consumedProperty;  // why do we have a consumedProperty?
               if (properties[property].observable === true) {
                 thing.observeProperty(property, (data) => {
                   properties[property]["consumedProperty"] = data;
                 });
               }
-            }
           } catch (err) {
             // this error happens when we cannot communicate with a thing. That is, we cannot read a property.
             console.log("it was rejected ", property);
@@ -303,75 +280,29 @@ export default {
       // To be created once all consumed properties have been read
       readAllProperties
         .then(() => {
-          console.log("------------------ is this working even?");
-          this.availability = "available";
-          //var propsToDisable = [];
-          // what if we just use the same old things?, we have to look for the id
-          //NEW        this.things.map(td_obj => {
-          //NEW          if (td_obj.id == thing.t_id) {
-          console.log("this is the last ", properties);
-          //if(Object.values(properties).includes(null)){}
-          var propToDel = Object.keys(properties).filter(function (k) {
-            return properties[k] === null;
-          });
-          // delete all properties found in array:
-          propToDel.forEach((prop) => {
-            console.log("delete? ", prop);
-            delete properties[prop];
-          });
+          console.log("setting the thing object with functionality")
+          //this.availability = "available";
 
-          this.availability = "available";
+          //this.availability = "available";
+          this.lastUpdate = this.lastUpdate = new Date();
           this.thing.properties = properties;
           this.thing.actions = td.actions;
           this.thing.events = td.events;
           console.log("my babe ", this.thing);
         })
         .catch((error) => {
-          console.log("there was ", error);
+          console.log("there was an error", error);
           this.availability = "unavailable";
         });
 
-      // Set up observables:
-      // 1. check up which properties have observable: true
-
-      //console.log(this.consumedProperties);
-      let keys = Object.keys(td.actions);
-      console.log("somekeys ", keys);
-      this.actions = td.actions;
-      //console.log("events: ", td.events);
     },
     refreshThing() {
       this.availability = "connecting";
       this.showInteractions(this.thing);
-      /*let specialPropertiesNames = null;
-      this.helpers
-        .fetch(this.wotTD)
-        .then(td => {
-          this.thingFactory.consume(td).then(thing => {
-            if (this.config) {
-              if (this.config.specialProperties.length > 0) {
-                console.log(this.config.specialProperties);
-                specialPropertiesNames = this.config.specialProperties.map(
-                  elem => elem.name
-                );
-              }
-            }
-
-            thing.hasThingConfiguration = this.config !== null;
-            thing.ThingConfiguration = this.config;
-            thing.specialPropertiesNames = specialPropertiesNames;
-
-            this.thing = thing;
-            this.showInteractions(thing);
-          });
-        })
-        .catch(err => {
-          // This error happens when the url of a thing is not reachable. This is useful for servients that use node-wot
-          console.log("er: ", err);
-          // update availability:
-          this.availability = "unavailable"; // maybe look for the this.things obj first
-        });*/
     },
+
+
+    // useless for now I guess:
     showConfigurationModal() {
       console.log("must show conf ", this.config);
       console.log("id: ", this.thingId);
@@ -388,16 +319,10 @@ export default {
       }
     },
     consumeProperty(property) {
-      console.log("se supone....");
+      console.log("Read a specific property, again, so it can be updated manually");
       console.log(property);
       this.thing.readProperty(property).then((updatedProperty) => {
-        // update property:
-        //this.things.find(thing => {
-        //if (thing.id == thingId) {
         this.thing.properties[property]["consumedProperty"] = updatedProperty;
-        //}
-        //});
-        //this.$set(this.properties[property], "consumedProperty", res);
       });
     },
     consumeAction(action, input) {
