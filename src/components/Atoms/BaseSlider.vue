@@ -4,12 +4,13 @@
       <div class="slidecontainer">
         <input
           ref="input"
-          v-model="currentValue"
+          v-bind="$attrs" 
+          :value="modelValue"
           type="range"
           :min="min"
           :max="max"
           class="slider"
-          @input="onInput"
+          @input="$emit('update:modelValue', $event.target.value)"
         >
       </div>
     </div>
@@ -19,9 +20,9 @@
 <script>
   export default {
     props: {
-        value: {
+        modelValue: {
             type: Number,
-            required: true
+            default: 1
         },
         min: {
             type: Number,
@@ -38,10 +39,7 @@
         };
         },
     methods: {
-        onInput() {
-        // this.currentValue is a string because HTML is weird
-        this.$emit('input', parseInt(this.currentValue));
-        }
+      
     }
   };
 
