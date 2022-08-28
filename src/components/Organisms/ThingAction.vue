@@ -1,9 +1,9 @@
 <template>
   <div>
-    <div>{{ actionName }}</div>
+    <div class="wotbar_action-header">{{ actionName }}</div>
 
     <div v-if="actionObj.description">
-      <span class="text-caption">{{ actionObj.description }}</span>
+      <span class="wotbar__caption">{{ actionObj.description }}</span>
     </div>
 
     <!-- action has no input, / it is a default action or needs parameters -->
@@ -43,13 +43,13 @@
         v-model.number="propvals[actionName]"
         :label="actionName"
       />
-      <q-item
+      <div
         v-if="
           Object.prototype.hasOwnProperty.call(actionObj, 'minimum') &&
           Object.prototype.hasOwnProperty.call(actionObj, 'maximum')
         "
       >
-        <q-item-section class="q-pt-md">
+        <div class="q-pt-md">
           <BaseSlider
             :label="propvals[actionName]"
             v-model.number="propvals[actionName]"
@@ -57,16 +57,16 @@
             :max="actionObj.maximum"
             :min="actionObj.minimum"
           />
-        </q-item-section>
-        <q-item-section side class="wotcard__action-side">
-          <q-item-label>
+        </div>
+        <!--<div side class="wotcard__action-side">
+          <div>
             <BaseInput
               v-model.number="propvals[actionName]"
               :label="actionName"
             />
-          </q-item-label>
-        </q-item-section>
-      </q-item>
+          </div>
+        </div>-->
+      </div>
 
       <!--<v-slider
         :label="actionName"
@@ -201,7 +201,7 @@ export default {
   },
   methods: {
     consumeAction(action, input) {
-      this.$emit("click", action, input);
+      this.$emit("actionTriggered", action, input);
     },
   },
 };
@@ -210,5 +210,16 @@ export default {
 <style >
 .wotcard__action-side {
   max-width: 80px;
+}
+
+.wotbar__caption{
+  font-size: 14px;
+  color: #888;
+  padding-bottom: 8px;
+}
+
+.wotbar_action-header{
+  padding-top: 10px;
+  padding-bottom: 4px;
 }
 </style>
