@@ -17,6 +17,7 @@
         :style="indicatorStyles" 
       />
     </span>
+    <span style="font-size: 12px; color: #555;margin:10px;padding:10px">{{label}}</span>
   </div>
 </template>
 
@@ -25,7 +26,11 @@ export default {
   props: {
     value:{
       type: Boolean,
-      required: true
+      default: false
+    },
+    label: {
+      type: String,
+      default: ""
     }
   },
   computed: {
