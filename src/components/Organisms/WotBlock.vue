@@ -2,13 +2,14 @@
   <div class="wotcard">
       <!-- THING TOOLBAR, related to configs of a thing and how a Thing is represented on a Database. Can show reactivity -->
       <!-- A Thing Toolbar is an optional prop-->
-        <!--<ThingToolbar
+      <div class="toolbar">
+        <ThingToolbar
           :thingObj="thing"
           :availability="availability"
           @refresh-thing="refreshThing"
           @showConfigurationModal="showConfigurationModal"
-        />-->
-      is reachable: {{availability}}
+        />
+      </div>
 
       <!-- REAL BEGINNING OF THING-->
       <!-- "second toolbar" -->
@@ -58,7 +59,7 @@
               <ThingAction
                 :actionName="parent_index"
                 :actionObj="action"
-                @click="consumeAction"
+                @actionTriggered="consumeAction"
               />
             </div>
       </Accordion>
@@ -70,7 +71,7 @@
               :key="parent_index"
             >
               <WotState
-                v-model="tempEvent[parent_index]"
+                v-model="tempEvent['_'+parent_index]"
                 @change="listenToEventIfTrue($event, parent_index)"
                 :label="`${parent_index}`"
               />
@@ -117,7 +118,7 @@ import dateHelper from '../../utils/dateHelper'
 //import ThingRootProperty from "@/components/ThingRootProperty";
 import ThingProperty from "./ThingProperty.vue";
 import ThingAction from "./ThingAction.vue";
-//import ThingToolbar from "./ThingToolbar";
+import ThingToolbar from "./ThingToolbar.vue";
 //import ModalDefaultConfiguration from "@/components/ModalDefaultConfiguration";
 
 export default {
@@ -156,7 +157,7 @@ export default {
     ThingProperty,
     ThingAction,
     WotState,
-    //ThingToolbar,
+    ThingToolbar,
     //ModalDefaultConfiguration,
   },
   computed: {
@@ -253,6 +254,7 @@ export default {
     },
 
     showInteractions(thing) {
+      this.updateLastUpdateTime();
       let td = thing.getThingDescription(); 
 
       let properties = td.properties;
@@ -294,7 +296,7 @@ export default {
       readAllProperties
         .then(() => {
           console.log("setting the thing object with functionality")
-          //this.availability = "available";
+          this.availability = "available";
 
           //this.availability = "available";
           this.lastUpdate = this.lastUpdate = new Date();
@@ -519,6 +521,11 @@ export default {
 
 .wotcard .header {
   padding: 1em 1em;
+  display: flex;
+}
+
+.wotcard .toolbar {
+  padding: 1em 1em 0em 1em;
   display: flex;
 }
 
