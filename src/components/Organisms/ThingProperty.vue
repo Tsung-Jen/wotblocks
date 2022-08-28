@@ -96,7 +96,7 @@
                 @click="consumeProperty(propertyName)"
               />
               <div class="wotbar__meter">
-                  <BaseSelect :options="propertyConsume"/>
+                  {{propertyConsume}}
               </div>
               
       </div>
