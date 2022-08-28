@@ -9,7 +9,7 @@ export default {
   title: 'Atoms/WotState',
   //👇 Our events will be mapped in Storybook UI
   argTypes: {
-    value: {
+    checked: {
         default: false
     }
   },
@@ -25,11 +25,11 @@ const Template = (args) => ({
 	setup() {
 		return { args };
 	},
-	template: '<WotState v-bind="args" v-model="value"/>',
+	template: '<WotState v-bind="args" v-model:checked="checked">',
 });
 
 export const Simple = Template.bind({});
 
 Simple.args = {
-    value: false
+    checked: false
   };

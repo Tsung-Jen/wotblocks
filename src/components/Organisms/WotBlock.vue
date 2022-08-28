@@ -71,7 +71,7 @@
               :key="parent_index"
             >
               <WotState
-                v-model="tempEvent['_'+parent_index]"
+                v-model:checked="tempEvent[parent_index]"
                 @change="listenToEventIfTrue($event, parent_index)"
                 :label="`${parent_index}`"
               />

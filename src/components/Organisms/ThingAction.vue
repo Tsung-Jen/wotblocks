@@ -97,7 +97,7 @@
     </div>
     <div v-if="actionObj.type == 'boolean'">
       <WotState
-        v-model="propvals[actionName]"
+        v-model:checked="propvals[actionName]"
         :label="actionName"
         color="green"
       />

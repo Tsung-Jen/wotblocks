@@ -85,7 +85,7 @@
                 :propertyName="propertyName"
                 @click="consumeProperty(propertyName)"
             />
-              <WotState :value="propertyConsume"/>
+             {{propertyConsume}}
       </div>
       <div v-if="propertyType == 'array'" class="wotbar">
             <!-- if it is readOnly -->
