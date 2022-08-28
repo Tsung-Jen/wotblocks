@@ -1,6 +1,7 @@
 <template>
-  <div class="accordion-item">
+  <div class="accordion-item" >
       <button
+        style="cursor:pointer;"
         class="clickarea"
         :id="header_id"
         :aria-controls="panel_id"
@@ -10,7 +11,7 @@
         <div class="accordion-spacer">
 
             <div class="accordion-begin">
-                <span v-if="icon" class="material-icons-outlined">{{icon}}</span>
+                <span v-if="icon" class="material-icons-outlined" style="color:#555;">{{icon}}</span>
                 <span class="accordion-title">{{title}}</span>
             </div>
             
@@ -93,13 +94,13 @@ export default {
     display: flex;
 }
 
-.clickarea{
+.accordion-item .clickarea{
     width: 100%;
     padding-left: 0px;
     padding-right: 14px;
     text-align: left;
-    background-color: #FFFFFF;
-    border: #FFFFFF;
+    background-color: #fff;
+    border: #eee;
 }
 
 .clickarea:hover{
@@ -126,6 +127,7 @@ export default {
 .accordion-slot-space{
     padding-left: 16px;
     padding-right: 16px;
+    padding-top: 1em;
 }
 
 </style>
