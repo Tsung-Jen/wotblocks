@@ -140,6 +140,15 @@ export default {
     webServient: {
       type: Object,
     },
+    refreshAvailabilityRate: {
+      type: Number,
+      default: 301000
+    },
+    updateTimerRate: {
+      type: Number,
+      default: 61000
+    }
+    
   },
   components: {
     //ThingRootProperty,
@@ -166,7 +175,8 @@ export default {
       eventSubscriptions: {},
       receivedEvents: ["asas", "asa"],
       messages: 0,
-      timer: null
+      updateTimer: null,
+      reachabilityChecker: null
     };
   },
   created() {
@@ -212,9 +222,12 @@ export default {
         });
     });
 
-    this.timer = setInterval(() => {
+    this.updateTimer = setInterval(() => {
       this.updateLastUpdateTime();
-    }, 30000)
+    }, this.updateTimerRate)
+    this.reachabilityChecker = setInterval(() => {
+      this.refreshThing();
+    }, this.refreshAvailabilityRate)
   },
   methods: {
     updateLastUpdateTime(){
