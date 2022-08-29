@@ -1,7 +1,8 @@
 <template>
   <div>
     <div class="slider-component">
-      <div class="slidecontainer">
+      <div class="slidecontainer" style="position:relative;">
+       
         <input
           ref="input"
           v-bind="$attrs" 
@@ -11,7 +12,9 @@
           :max="max"
           class="slider"
           @input="$emit('update:modelValue', $event.target.value)"
+          oninput="this.nextElementSibling.value = this.value"
         >
+        <output style="position:absolute; right:-25px; top: 0; color:blue; min-width:10px;font-size: 0.9em;">1</output>
       </div>
     </div>
   </div>
@@ -47,7 +50,7 @@
 
 <style scoped>
 .slider-component .slidecontainer {
-	width: 100%;
+	width: 80%;
 }
 
 .slider-component .slidecontainer .slider {
