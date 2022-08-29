@@ -76,6 +76,7 @@
                 :label="`${parent_index}`"
               />
             </div>
+        <div style="padding-bottom:20px;"></div>
       </Accordion>
       <!--<div class="wotcard__expansion">
         <div
