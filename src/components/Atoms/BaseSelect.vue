@@ -1,5 +1,5 @@
 <template>
-  <label v-if="label">{{ label }}</label>
+  <label v-if="label" style="padding-right:8px; font-size:0.9em; color: #555;">{{ label }}</label>
   <select
     class="field"
     :value="modelValue"
@@ -54,29 +54,5 @@ select:focus::ms-value {
   background: #fff;
 }
 
-.options {
-    display:none;
-    position:absolute;
-    top:100%;
-    right:0;
-    left:0;
-    z-index:999;
-    margin:0 0;
-    padding:0 0;
-    list-style:none;
-    border:1px solid #ccc;
-    background-color:white;
-    -webkit-box-shadow:0 1px 2px rgba(0, 0, 0, 0.2);
-    -moz-box-shadow:0 1px 2px rgba(0, 0, 0, 0.2);
-    box-shadow:0 1px 2px rgba(0, 0, 0, 0.2);
-}
-.options li {
-    padding:0 6px;
-    margin:0 0;
-    padding:0 10px;
-}
-.options li:hover {
-    background-color:#39f;
-    color:white;
-}
+
 </style>
