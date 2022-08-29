@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="wotcard__action">
     <div class="wotbar_action-header">{{ actionName }}</div>
 
     <div v-if="actionObj.description">
@@ -208,6 +208,28 @@ export default {
 </script>
 
 <style >
+.wotcard__action .full-width{
+  width: 100%;
+  border-width: 0px;
+  padding: 8px;
+  text-transform: uppercase;
+  font-size: 0.7em;
+  border: 1px solid #4caf50;
+  color: #2aaa50;
+}
+
+.wotcard__action .full-width:hover{
+  background-color:  #4caf50;
+  cursor: pointer;
+  color: #444;
+  font-weight: 700;
+}
+
+.wotcard__action .full-width:before{
+    content: "\f144  ";
+    font-family: "FontAwesome";
+}
+
 .wotcard__action-side {
   max-width: 80px;
 }
