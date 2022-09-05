@@ -41,7 +41,7 @@
               :propertyObj="property"
               :propertyConsume="property.consumedProperty"
               :objectProperties="property"
-              @click="consumeProperty"
+              @onConsumeClick="consumeProperty"
             >
               <template v-slot:special="{ specialProp }">
                 <slot name="special" :specialProp="specialProp"></slot>
@@ -64,7 +64,7 @@
             </div>
       </Accordion>
 
-      <!-- Events -->
+      <!-- Events --> {{tempEvent}}
       <Accordion :title="'Events'" :icon="'notifications'" id="events">
         <div
               v-for="(event, parent_index) in thing.events"
@@ -72,8 +72,8 @@
             >
               <WotState
                 v-model:checked="tempEvent[parent_index]"
-                @change="listenToEventIfTrue($event, parent_index)"
                 :label="`${parent_index}`"
+                @onStateChanged="listenToEventIfTrue($event, parent_index, tempEvent[parent_index])"
               />
             </div>
         <div style="padding-bottom:20px;"></div>
@@ -112,11 +112,7 @@
 <script>
 import Accordion from "../Atoms/Accordion.vue"
 import WotState from "../Atoms/WotState.vue"
-
 import dateHelper from '../../utils/dateHelper'
-//import * as Core from "@node-wot/";
-//import * as WotHttp from "@node-wot/binding-http";
-//import ThingRootProperty from "@/components/ThingRootProperty";
 import ThingProperty from "./ThingProperty.vue";
 import ThingAction from "./ThingAction.vue";
 import ThingToolbar from "./ThingToolbar.vue";
@@ -149,11 +145,14 @@ export default {
     updateTimerRate: {
       type: Number,
       default: 61000
+    },
+    defaultProtocol: {
+      type: String,
+      default: "http"
     }
     
   },
   components: {
-    //ThingRootProperty,
     Accordion,
     ThingProperty,
     ThingAction,
@@ -175,21 +174,24 @@ export default {
       thingFactory: null,
       tempEvent: {},
       eventSubscriptions: {},
-      receivedEvents: ["asas", "asa"],
+      receivedEvents: ["ev1", "ev2"],
       messages: 0,
       updateTimer: null,
-      reachabilityChecker: null
+      reachabilityChecker: null,
+      thingServient: null,
+      helpers: null
     };
   },
   created() {
   },
   mounted() {
-    let servient = new Wot.Core.Servient();
-    servient.addClientFactory(new Wot.Http.HttpClientFactory());
-    this.helpers = new Wot.Core.Helpers(servient);
+    this.thingServient = new Wot.Core.Servient();
+    
+    this.thingServient.addClientFactory(new Wot.Http.HttpClientFactory());
+    this.helpers = new Wot.Core.Helpers(this.thingServient);
 
     // 1st. first check whether I was provided with a webServient, or need to create a new one for this specific thing.
-    servient.start().then((thingFactory) => {
+    this.thingServient.start().then((thingFactory) => {
       this.thingFactory = thingFactory;
       //this.checkAvailability();
       this.helpers
@@ -202,6 +204,8 @@ export default {
               //this.availability = "connecting";
               // New default behavior:
               this.showInteractions(thing);
+
+              this.lastSetup(thing);
 
               // Actually, here we should only check this method if we have provided a config.
               //this.setupWoTBlockConfigurations(thing, this.config);
@@ -219,7 +223,6 @@ export default {
           // first attempt to reach the WoT Thing:
           // update availability:
           this.availability = "unavailable";
-          this.lastUpdate = new Date();
           this.updateLastUpdateTime()
         });
     });
@@ -233,26 +236,24 @@ export default {
   },
   methods: {
     updateLastUpdateTime(){
+      this.lastUpdate = new Date();
       this.lastReachabilityTime = dateHelper.timeSince(this.lastUpdate)
     },
-    listenToEventIfTrue(e, eventName) {
-      console.log("what is th name? ", e);
-      console.log("other ar ", eventName);
-      console.log("test: ", this.thing);
-      if (e === true) {
-        this.eventSubscriptions[eventName] = this.thing.subscribeEvent(
-          eventName,
-          (res) => {
-            console.log("it for name  ", eventName);
-            console.log("it was listened uscc ", res);
-          },
-          (err) => {
-            console.log(eventName);
-            console.log("damm..", err);
+    lastSetup(thing){
+      window.addEventListener('popstate', function (event) {
+	    // The URL changed...
+        let propertyNames = Object.keys(thing.properties);
+        console.log("ajssa ", propertyNames);
+        propertyNames.forEach((property, index, array) => {
+          if (thing.properties[property].observable === true) {
+                  thing.unobserveProperty(property);
           }
-        );
-      }
+        });
+        this.thing = {};
+        this.thingServient = {};
+      });
     },
+    
 
     showInteractions(thing) {
       this.updateLastUpdateTime();
@@ -274,14 +275,15 @@ export default {
               let consumedProperty = await thing.readProperty(property);
               console.log("consumed property: ", consumedProperty);
               properties[property]["consumedProperty"] = consumedProperty;  // why do we have a consumedProperty?
+              this.availability = "available" // if it reaches here, it can reach it.
               if (properties[property].observable === true) {
-                thing.observeProperty(property, (data) => {
-                  properties[property]["consumedProperty"] = data;
+                thing.observeProperty(property, (data) => {       
+                  this.thing.properties[property]["consumedProperty"] = data;
                 });
               }
           } catch (err) {
             // this error happens when we cannot communicate with a thing. That is, we cannot read a property.
-            console.log("it was rejected ", property);
+            console.log("err ", err);
             reject(err);
           }
 
@@ -290,7 +292,7 @@ export default {
 
         setTimeout(function () {
           reject("timeout");
-        }, 10000);
+        }, 20000);
       });
 
       // To be created once all consumed properties have been read
@@ -304,17 +306,56 @@ export default {
           this.thing.properties = properties;
           this.thing.actions = td.actions;
           this.thing.events = td.events;
-          console.log("my babe ", this.thing);
         })
         .catch((error) => {
           console.log("there was an error", error);
-          this.availability = "unavailable";
+          //this.availability = "unavailable";
         });
 
     },
+    listenToEventIfTrue(e, eventName, state) {
+      if (state === true && !this.eventSubscriptions[eventName]) {
+        this.eventSubscriptions[eventName] = eventName;
+        this.thing.subscribeEvent(
+          eventName,
+          async function (data) {
+            //console.log('Event "' + evnt + '"');
+            window.alert("event: " + data);
+          }).then((sub, ss) => {
+            console.log("Subscribed for event: " + eventName);
+            
+          })
+          .catch((error) => {
+            console.log(eventName);
+            window.alert("Event " + evnt + " error\nMessage: " + error);
+          }
+        );
+      } else if (state === false && this.eventSubscriptions[eventName]) {
+        console.log("Try to unsubscribing for event: " + eventName);
+        this.eventSubscriptions[eventName] 
+        this.thing.unsubscribeEvent(
+          eventName,
+          async function (data) {
+
+          }).then((sub, ss) => {
+            this.eventSubscriptions[eventName] = undefined;
+            
+          })
+          .catch((error) => {
+            console.log(eventName);
+            window.alert("Event " + evnt + " error\nMessage: " + error);
+          }
+        );
+                            
+      }
+    },
     refreshThing() {
       this.availability = "connecting";
-      this.showInteractions(this.thing);
+      this.removeInteractions();
+      //this.showInteractions(this.thing);
+    },
+    removeInteractions() {
+        //this.
     },
 
 
@@ -335,10 +376,12 @@ export default {
       }
     },
     consumeProperty(property) {
-      console.log("Read a specific property, again, so it can be updated manually");
-      console.log(property);
+      console.log("Read a specific property, again, so it can be updated manually",property);
       this.thing.readProperty(property).then((updatedProperty) => {
+        console.log("just fo the rec ", property)
         this.thing.properties[property]["consumedProperty"] = updatedProperty;
+        console.log("updated prop: ", updatedProperty);
+        this.availability = "available";
       });
     },
     consumeAction(action, input) {
