@@ -13,8 +13,6 @@
 
       <!-- REAL BEGINNING OF THING-->
       <!-- "second toolbar" -->
-      <!--<i class="material-icons-outlined">sports_esports</i>
-      <span class="material-icons">face</span>-->
       <div class="header">
         <div class="main">
           <div class="main-title">{{ thing.title }}</div>
@@ -25,7 +23,6 @@
           <div class="main-subtitle">last updated</div> <div class="main-time">{{lastReachabilityTime}} ago</div>
         </div>
       </div>
-        
           
       <!-- "END of second toolbar" -->
 
@@ -50,7 +47,6 @@
       </Accordion>
 
       <!-- Actions -->
- 
       <Accordion :title="'Actions'" :icon="'sports_esports'" id="actions">
         <div
               v-for="(action, parent_index) in thing.actions"
@@ -64,7 +60,7 @@
             </div>
       </Accordion>
 
-      <!-- Events --> {{tempEvent}}
+      <!-- Events -->
       <Accordion :title="'Events'" :icon="'notifications'" id="events">
         <div
               v-for="(event, parent_index) in thing.events"
@@ -78,20 +74,8 @@
             </div>
         <div style="padding-bottom:20px;"></div>
       </Accordion>
-      <!--<div class="wotcard__expansion">
-        <div
-              v-for="(action, parent_index) in thing.actions"
-              :key="parent_index"
-            >
-              <ThingAction
-                :actionName="parent_index"
-                :actionObj="action"
-                @click="consumeAction"
-              />
-            </div>
-      </div>-->
 
-    <!-- Default Modal for adding/setting configuration -->
+    <!-- Default Modal for adding/setting configuration TODO -->
     <!-- <slot
       name="configModal"
       :wotBlockScope="{
@@ -254,7 +238,6 @@ export default {
       });
     },
     
-
     showInteractions(thing) {
       this.updateLastUpdateTime();
       let td = thing.getThingDescription(); 
@@ -351,202 +334,34 @@ export default {
     },
     refreshThing() {
       this.availability = "connecting";
-      this.removeInteractions();
-      //this.showInteractions(this.thing);
-    },
-    removeInteractions() {
-        //this.
+      this.showInteractions(this.thing);
     },
 
-
-    // useless for now I guess:
-    showConfigurationModal() {
-      console.log("must show conf ", this.config);
-      console.log("id: ", this.thingId);
-      this.dialogConfiguration = true;
-    },
-    closeConfigurationModal(newConfigs) {
-      this.dialogConfiguration = false;
-      console.log(newConfigs);
-      if (newConfigs) {
-        console.log("there was new", newConfigs.data.newConfig);
-        console.log("new config should: ", this.thing.ThingConfiguration.name);
-        this.thing.ThingConfiguration = newConfigs.data.newConfig;
-        this.setupWoTBlockConfigurations(this.thing, newConfigs.data.newConfig);
-      }
-    },
     consumeProperty(property) {
       console.log("Read a specific property, again, so it can be updated manually",property);
       this.thing.readProperty(property).then((updatedProperty) => {
-        console.log("just fo the rec ", property)
         this.thing.properties[property]["consumedProperty"] = updatedProperty;
         console.log("updated prop: ", updatedProperty);
         this.availability = "available";
       });
     },
     consumeAction(action, input) {
-      console.log("action: ", action);
-      console.log("input: ", input);
-      console.log("thing: ", this.thing);
-      var newinput = { on: true };
 
-      console.log(typeof input);
-      console.log(typeof newinput);
-
-      if (typeof input == "object") {
-        let keys = Object.keys(input);
-        console.log("some", keys);
-        //let newobj = {};
-        //newobj = Object.defineProperty(newobj, keys[0], input[keys[0]]);
-        //console.log(newobj);
-      }
       this.thing
         .invokeAction(action, input)
         .then((res) => {
           if (res) {
             console.log(res);
-            window.alert("Success! Received response: " + res);
-          } else {
             window.alert("Executed successfully.");
-          }
+          } 
         })
         .catch((err) => {
           window.alert(err);
         });
-      //showSchemaEditor(action, thing) in the case of light, you can rename and set_state
 
       // invoke actions.
       // http://gist.githubusercontent.com/jmaza/ae17b8e1bec458ed706d99f1af09e031/raw/cf94d830793456bf13c656c8b6295ffd689bd64c/thingdesc.json
       // https://gist.githubusercontent.com/jmaza/3f555e5c782594bbd52244a684e6af5e/raw/066375538a0738cbdbfe27d7a6d3086fedacccf2/senhat
-    },
-    checkAvailability() {
-      // here we must check how long shall each thing check for its availability: (get this data from User configuration for a Thing)
-      // -- this {user} has set that for a Thing, refreshSeconds should be 10000.
-
-      // for each Thing, check (or for now, a default)
-
-      var hasChangeDetection = false;
-      // check if thing has configs
-      console.log(this.thing.hasThingConfiguration);
-      //this.polling = new Object();
-      console.log("the poll ", this.polling);
-      if (this.polling) {
-        console.log("clearring");
-        clearInterval(this.polling[this.thing]);
-      }
-      if (this.thing.hasThingConfiguration) {
-        console.log(
-          `!!!!!!!! thing: ${this.thing.ThingConfiguration.changeDetection}`
-        );
-        if (this.thing.ThingConfiguration.changeDetection) {
-          hasChangeDetection = this.thing.ThingConfiguration.changeDetection;
-        }
-      }
-      if (hasChangeDetection) {
-        console.log(
-          `setting for: ${this.thing} a refresh time of: ${this.thing.ThingConfiguration.millisecondsToCheckChange}`
-        );
-        this.polling[this.thing] = setInterval(() => {
-          this.refreshThing();
-        }, this.thing.ThingConfiguration.millisecondsToCheckChange);
-      }
-    },
-    setupWoTBlockConfigurations(thing, WotBlockConfig) {
-      let specialPropertiesNames = null;
-      console.log("it knows thing is: ", thing.ThingConfiguration);
-      console.log("and match: ", WotBlockConfig);
-      // NOTE!!!! HERE IS THE FIRST TIME  ATHING HAS PROPERTIES AND ACTIONS. I could map properties here, for example
-      if (WotBlockConfig) {
-        console.log("should not here!!!");
-        if (WotBlockConfig.specialProperties.length > 0) {
-          console.log(WotBlockConfig.specialProperties);
-          specialPropertiesNames = WotBlockConfig.specialProperties.map(
-            (elem) => elem.name
-          );
-        }
-      }
-      console.log(specialPropertiesNames);
-      // find all the properties: (properties is an object)
-      if (specialPropertiesNames) {
-        specialPropertiesNames.forEach((prop) => {
-          // ea prop will be tested if ubicada en el objecto:
-          console.log(prop);
-          var roots = Object.keys(thing.properties);
-          // 2. roots is an array of rootkeys. Test each of these keys:
-          roots.forEach((root) => {
-            // check rootkeys in obj:  thing.properties[root] ... a root is a key, like lightInformation or availableResources?
-            // roots can be compared to a prop (IMPORTANT!)
-
-            if (prop == root) {
-              console.log("match of ", root);
-              // change the property and add it with powers   --- thing.properties[root] is the level to be modified
-              console.log("Adddding : ", WotBlockConfig.specialProperties); // an array of objs. one of these objs has the same name.
-              var newPropToAdd = WotBlockConfig.specialProperties.filter(
-                (prop) => {
-                  return prop.name == root;
-                }
-              );
-              thing.properties[root].specialConf = newPropToAdd;
-              // TASK: look for the configuration. it is already there in the thing?
-            }
-
-            //if type is object, it means we have more properties to investigate:   (A root can be of type object.. it neeeds expansion)
-            if (thing.properties[root].type == "object") {
-              // we must expand:
-              var subRoots = Object.keys(thing.properties[root].properties); // this is an object
-
-              subRoots.forEach((subRoot) => {
-                // subRoot can be compared to a prop (IMPORTANT!)
-
-                if (prop == subRoot) {
-                  var newPropToAdd = WotBlockConfig.specialProperties.filter(
-                    (prop) => {
-                      return prop.name == subRoot;
-                    }
-                  );
-                  thing.properties[root].properties[
-                    subRoot
-                  ].specialConf = newPropToAdd;
-                }
-
-                if (
-                  thing.properties[root].properties[subRoot].type == "object"
-                ) {
-                  var subSubRoots = Object.keys(
-                    thing.properties[root].properties[subRoot].properties
-                  ); // this is an object
-                  // subSubRoots must be compared to a prop (IMPORTANT!)
-                  console.log(subSubRoots);
-
-                  subSubRoots.forEach((subSubRoot) => {
-                    if (prop == subSubRoot) {
-                      var newPropToAdd = WotBlockConfig.specialProperties.filter(
-                        (prop) => {
-                          return prop.name == subSubRoot;
-                        }
-                      );
-                      thing.properties[root].properties[subRoot].properties[
-                        subSubRoot
-                      ].specialConf = newPropToAdd;
-                    }
-                  });
-                }
-              });
-            }
-          });
-        });
-      }
-
-      thing.t_id = this.thingId; // test if nothing happens if removed.
-      thing.hasThingConfiguration =
-        WotBlockConfig !== undefined && WotBlockConfig !== null;
-      thing.ThingConfiguration = WotBlockConfig;
-      thing.specialPropertiesNames = specialPropertiesNames;
-
-      this.thing = thing;
-      this.checkAvailability();
-      //this.thingsToConsume.push(thing); // TODO: this thingsToConsume array is not necessary
-      this.showInteractions(thing);
     },
   },
 };
