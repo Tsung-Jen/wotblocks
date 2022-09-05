@@ -29,4 +29,12 @@ meter {
   width: 100%;
 
 }
+meter::after {
+ content : attr(value);
+ top:-17px;
+ left:40px;
+ position:relative;
+ background: white;
+ padding:5px;
+}
 </style>
