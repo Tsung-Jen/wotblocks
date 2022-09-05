@@ -37,28 +37,10 @@
               Object.prototype.hasOwnProperty.call(objectProperties, 'maximum')
             "
           >
-            <WotMeterBar :value="(propertyConsume / objectProperties.maximum) * 100"></WotMeterBar> {{propertyConsume}}
-
-            <!--<q-linear-progress
-              size="15px"
-              :value="(propertyConsume / objectProperties.maximum) * 100"
-              color="accent"
-            >
-              <div class="absolute-full flex flex-center">
-                <q-badge
-                  color="white"
-                  text-color="accent"
-                  :label="
-                    Math.floor(
-                      (propertyConsume / objectProperties.maximum) * 100
-                    )
-                  "
-                />
-              </div>
-            </q-linear-progress>-->
-          
-     
-              
+            <WotMeterBar :value="(propertyConsume / objectProperties.maximum) * 100" :label="''+propertyConsume"></WotMeterBar> 
+           </div>
+           <div v-else>
+             {{propertyConsume}}
            </div>
       </div>
       <div v-if="propertyType == 'number'">
@@ -205,7 +187,7 @@ export default {
   methods: {
     consumeProperty(property) {
       console.log("ones ", property);
-      this.$emit("click", property);
+      this.$emit("onConsumeClick", property);
     },
   },
 };
