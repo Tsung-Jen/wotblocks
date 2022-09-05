@@ -34,7 +34,7 @@
             </div>
         </div>
       </button>
-    <section :id="panel_id" :aria-labelledby="header_id" :hidden="!isExpanded" class="accordion-slot-space">
+    <section :id="panel_id" :aria-labelledby="header_id" v-show="isExpanded" class="accordion-slot-space">
       <slot></slot>
     </section>
   </div>
