@@ -6,6 +6,9 @@
         <span style="font-size:0.7em; font-weight:200; cursor:pointer;">{{propertyName}}</span>
         <span class="tooltiptext">{{ objectProperties.description }}</span>
       </div>
+      <div v-else style="font-size:0.7em; font-weight:200; text-align:center;" >
+        {{propertyName}}
+      </div>
     
   </div>
 </template>
