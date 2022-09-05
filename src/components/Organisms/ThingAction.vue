@@ -49,7 +49,7 @@
           Object.prototype.hasOwnProperty.call(actionObj, 'maximum')
         "
       >
-        <div class="q-pt-md">
+        <div class="">
           <BaseSlider
             :label="propvals[actionName]"
             v-model.number="propvals[actionName]"
