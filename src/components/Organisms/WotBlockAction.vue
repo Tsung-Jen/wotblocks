@@ -120,7 +120,7 @@
           v-for="(property, index) in actionObj.input.properties"
           :key="index"
         >
-          <ThingAction
+          <WotBlockAction
             :propvals="propvals"
             :actionName="index"
             :actionObj="property"
@@ -148,7 +148,7 @@
           v-for="(uriVariable, index) in actionObj.uriVariables"
           :key="index"
         >
-          <ThingAction
+          <WotBlockAction
             :propvals="propvals"
             :actionName="index"
             :actionObj="uriVariable"
@@ -166,7 +166,7 @@ import BaseSlider from "../Atoms/BaseSlider.vue"
 import WotState from "../Atoms/WotState.vue"
 
 export default {
-  name: "ThingAction",
+  name: "WotBlockAction",
   components: {
     BaseSelect,
     BaseSlider,

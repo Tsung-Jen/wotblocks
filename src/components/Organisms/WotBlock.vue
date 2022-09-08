@@ -30,7 +30,7 @@
 
       <!-- PROPERTIES -->
       <Accordion :title="'Properties'" :icon="'ballot'" id="properties">
-        <ThingProperty
+        <WotBlockProperty
               v-for="(property, index) in thing.properties"
               :key="index"
               :propertyType="property.type"
@@ -43,7 +43,7 @@
               <template v-slot:special="{ specialProp }">
                 <slot name="special" :specialProp="specialProp"></slot>
               </template>
-            </ThingProperty>
+            </WotBlockProperty>
       </Accordion>
 
       <!-- Actions -->
@@ -52,7 +52,7 @@
               v-for="(action, parent_index) in thing.actions"
               :key="parent_index"
             >
-              <ThingAction
+              <WotBlockAction
                 :actionName="parent_index"
                 :actionObj="action"
                 @actionTriggered="consumeAction"
@@ -97,9 +97,9 @@
 import Accordion from "../Atoms/Accordion.vue"
 import WotState from "../Atoms/WotState.vue"
 import dateHelper from '../../utils/dateHelper'
-import ThingProperty from "./ThingProperty.vue";
-import ThingAction from "./ThingAction.vue";
-import ThingToolbar from "./ThingToolbar.vue";
+import WotBlockProperty from "./WotBlockProperty.vue";
+import WotBlockAction from "./WotBlockAction.vue";
+import ThingToolbar from "../Molecules/ThingToolbar.vue";
 //import ModalDefaultConfiguration from "@/components/ModalDefaultConfiguration";
 
 export default {
@@ -138,8 +138,8 @@ export default {
   },
   components: {
     Accordion,
-    ThingProperty,
-    ThingAction,
+    WotBlockProperty,
+    WotBlockAction,
     WotState,
     ThingToolbar,
     //ModalDefaultConfiguration,

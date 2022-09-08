@@ -106,7 +106,7 @@
         <div v-if="'specialConf' in subsubprop">
           <!-- Check if property is enabled: -->
           <div v-if="subsubprop.specialConf[0].isEnabled">
-            <ThingProperty
+            <WotBlockProperty
               :propertyType="subsubprop.type"
               :propertyName="subPropertyName"
               :propertyObj="propertyObj"
@@ -116,11 +116,11 @@
               <template v-slot:special="{ specialProp }">
                 <slot name="special" :specialProp="specialProp"></slot>
               </template>
-            </ThingProperty>
+            </WotBlockProperty>
           </div>
         </div>
         <div v-else>
-          <ThingProperty
+          <WotBlockProperty
             :propertyType="subsubprop.type"
             :propertyName="subPropertyName"
             :propertyObj="propertyObj"
@@ -130,7 +130,7 @@
             <template v-slot:special="{ specialProp }">
               <slot name="special" :specialProp="specialProp"></slot>
             </template>
-          </ThingProperty>
+          </WotBlockProperty>
         </div>
       </div>
     </div>
@@ -141,10 +141,10 @@
 import BaseSelect from "../Atoms/BaseSelect.vue"
 import WotState from "../Atoms/WotState.vue"
 import WotMeterBar from "../Atoms/WotMeterBar.vue"
-import UIPropertyRefresh from "./UIPropertyRefresh.vue";
+import UIPropertyRefresh from "./../Molecules/UIPropertyRefresh.vue";
 
 export default {
-  name: "ThingProperty",
+  name: "WotBlockProperty",
   components: {
     BaseSelect,
     WotMeterBar,
@@ -186,7 +186,6 @@ export default {
   computed: {},
   methods: {
     consumeProperty(property) {
-      console.log("ones ", property);
       this.$emit("onConsumeClick", property);
     },
   },
