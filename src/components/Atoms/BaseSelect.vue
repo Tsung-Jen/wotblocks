@@ -1,11 +1,17 @@
 <template>
-  <label v-if="label" style="padding-right:8px; font-size:0.9em; color: #555;">{{ label }}</label>
+  <label
+    v-if="label"
+    style="padding-right: 8px; font-size: 0.9em; color: #555"
+    >{{ label }}</label
+  >
   <select
     class="field"
     :value="modelValue"
     v-bind="{
       ...$attrs,
-      onChange: ($event) => { $emit('update:modelValue', $event.target.value) }
+      onChange: ($event) => {
+        $emit('update:modelValue', $event.target.value);
+      },
     }"
   >
     <option
@@ -13,7 +19,9 @@
       :value="option"
       :key="option"
       :selected="option === modelValue"
-    >{{ option }}</option>
+    >
+      {{ option }}
+    </option>
   </select>
 </template>
 
@@ -22,22 +30,23 @@ export default {
   props: {
     label: {
       type: String,
-      default: ''
+      default: "",
     },
     modelValue: {
       type: [String, Number],
-      default: ''
+      default: "",
     },
     options: {
       type: Array,
-      required: true
-    }
-  }
-}
+      required: true,
+    },
+  },
+};
 </script>
 
 <style scoped>
-optgroup, select {
+optgroup,
+select {
   display: inline-flex;
   font-family: "Open sans", sans-serif;
   line-height: 1.15;
@@ -53,6 +62,4 @@ select:focus::ms-value {
   color: #000;
   background: #fff;
 }
-
-
 </style>

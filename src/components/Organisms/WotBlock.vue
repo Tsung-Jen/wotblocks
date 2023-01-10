@@ -1,79 +1,76 @@
 <template>
   <div class="wotcard">
-      <!-- THING TOOLBAR, related to configs of a thing and how a Thing is represented on a Database. Can show reactivity -->
-      <!-- A Thing Toolbar is an optional prop-->
-      <div class="toolbar">
-        <ThingToolbar
-          :thingObj="thing"
-          :availability="availability"
-          @refresh-thing="refreshThing"
-          @showConfigurationModal="showConfigurationModal"
+    <!-- THING TOOLBAR, related to configs of a thing and how a Thing is represented on a Database. Can show reactivity -->
+    <!-- A Thing Toolbar is an optional prop-->
+    <div class="toolbar">
+      <ThingToolbar
+        :thingObj="thing"
+        :availability="availability"
+        @refresh-thing="refreshThing"
+        @showConfigurationModal="showConfigurationModal"
+      />
+    </div>
+
+    <!-- REAL BEGINNING OF THING-->
+    <!-- "second toolbar" -->
+    <div class="header">
+      <div class="main">
+        <div class="main-title">{{ thing.title }}</div>
+        <div class="main-subtitle">{{ thing.description }}</div>
+      </div>
+
+      <div class="main-right">
+        <div class="main-subtitle">last updated</div>
+        <div class="main-time">{{ lastReachabilityTime }} ago</div>
+      </div>
+    </div>
+
+    <!-- "END of second toolbar" -->
+
+    <!-- END of THING SPECIFICS -->
+
+    <!-- PROPERTIES -->
+    <Accordion :title="'Properties'" :icon="'ballot'" id="properties">
+      <WotBlockProperty
+        v-for="(property, index) in thing.properties"
+        :key="index"
+        :propertyType="property.type"
+        :propertyName="index"
+        :propertyObj="property"
+        :propertyConsume="property.consumedProperty"
+        :objectProperties="property"
+        @onConsumeClick="consumeProperty"
+      >
+        <template v-slot:special="{ specialProp }">
+          <slot name="special" :specialProp="specialProp"></slot>
+        </template>
+      </WotBlockProperty>
+    </Accordion>
+
+    <!-- Actions -->
+    <Accordion :title="'Actions'" :icon="'sports_esports'" id="actions">
+      <div v-for="(action, parent_index) in thing.actions" :key="parent_index">
+        <WotBlockAction
+          :actionName="parent_index"
+          :actionObj="action"
+          @actionTriggered="consumeAction"
         />
       </div>
+    </Accordion>
 
-      <!-- REAL BEGINNING OF THING-->
-      <!-- "second toolbar" -->
-      <div class="header">
-        <div class="main">
-          <div class="main-title">{{ thing.title }}</div>
-          <div class="main-subtitle">{{ thing.description }}</div>
-        </div>
-          
-        <div class="main-right">
-          <div class="main-subtitle">last updated</div> <div class="main-time">{{lastReachabilityTime}} ago</div>
-        </div>
+    <!-- Events -->
+    <Accordion :title="'Events'" :icon="'notifications'" id="events">
+      <div v-for="(event, parent_index) in thing.events" :key="parent_index">
+        <WotState
+          v-model:checked="tempEvent[parent_index]"
+          :label="`${parent_index}`"
+          @onStateChanged="
+            listenToEventIfTrue($event, parent_index, tempEvent[parent_index])
+          "
+        />
       </div>
-          
-      <!-- "END of second toolbar" -->
-
-      <!-- END of THING SPECIFICS -->
-
-      <!-- PROPERTIES -->
-      <Accordion :title="'Properties'" :icon="'ballot'" id="properties">
-        <WotBlockProperty
-              v-for="(property, index) in thing.properties"
-              :key="index"
-              :propertyType="property.type"
-              :propertyName="index"
-              :propertyObj="property"
-              :propertyConsume="property.consumedProperty"
-              :objectProperties="property"
-              @onConsumeClick="consumeProperty"
-            >
-              <template v-slot:special="{ specialProp }">
-                <slot name="special" :specialProp="specialProp"></slot>
-              </template>
-            </WotBlockProperty>
-      </Accordion>
-
-      <!-- Actions -->
-      <Accordion :title="'Actions'" :icon="'sports_esports'" id="actions">
-        <div
-              v-for="(action, parent_index) in thing.actions"
-              :key="parent_index"
-            >
-              <WotBlockAction
-                :actionName="parent_index"
-                :actionObj="action"
-                @actionTriggered="consumeAction"
-              />
-            </div>
-      </Accordion>
-
-      <!-- Events -->
-      <Accordion :title="'Events'" :icon="'notifications'" id="events">
-        <div
-              v-for="(event, parent_index) in thing.events"
-              :key="parent_index"
-            >
-              <WotState
-                v-model:checked="tempEvent[parent_index]"
-                :label="`${parent_index}`"
-                @onStateChanged="listenToEventIfTrue($event, parent_index, tempEvent[parent_index])"
-              />
-            </div>
-        <div style="padding-bottom:20px;"></div>
-      </Accordion>
+      <div style="padding-bottom: 20px"></div>
+    </Accordion>
 
     <!-- Default Modal for adding/setting configuration TODO -->
     <!-- <slot
@@ -94,9 +91,9 @@
 </template>
 
 <script>
-import Accordion from "../Atoms/Accordion.vue"
-import WotState from "../Atoms/WotState.vue"
-import dateHelper from '../../utils/dateHelper'
+import Accordion from "../Atoms/Accordion.vue";
+import WotState from "../Atoms/WotState.vue";
+import dateHelper from "../../utils/dateHelper";
 import WotBlockProperty from "./WotBlockProperty.vue";
 import WotBlockAction from "./WotBlockAction.vue";
 import ThingToolbar from "../Molecules/ThingToolbar.vue";
@@ -124,17 +121,16 @@ export default {
     },
     refreshAvailabilityRate: {
       type: Number,
-      default: 301000
+      default: 301000,
     },
     updateTimerRate: {
       type: Number,
-      default: 61000
+      default: 61000,
     },
     defaultProtocol: {
       type: String,
-      default: "http"
-    }
-    
+      default: "http",
+    },
   },
   components: {
     Accordion,
@@ -144,8 +140,7 @@ export default {
     ThingToolbar,
     //ModalDefaultConfiguration,
   },
-  computed: {
-  },
+  computed: {},
   data() {
     return {
       dialogConfiguration: false,
@@ -163,14 +158,13 @@ export default {
       updateTimer: null,
       reachabilityChecker: null,
       thingServient: null,
-      helpers: null
+      helpers: null,
     };
   },
-  created() {
-  },
+  created() {},
   mounted() {
     this.thingServient = new Wot.Core.Servient();
-    
+
     this.thingServient.addClientFactory(new Wot.Http.HttpClientFactory());
     this.helpers = new Wot.Core.Helpers(this.thingServient);
 
@@ -193,7 +187,6 @@ export default {
 
               // Actually, here we should only check this method if we have provided a config.
               //this.setupWoTBlockConfigurations(thing, this.config);
-
             }) // end of "td fetch"
             .catch((err) => {
               // This error happens when the url of a thing is not reachable. This is useful for servients that use node-wot
@@ -207,40 +200,40 @@ export default {
           // first attempt to reach the WoT Thing:
           // update availability:
           this.availability = "unavailable";
-          this.updateLastUpdateTime()
+          this.updateLastUpdateTime();
         });
     });
 
     this.updateTimer = setInterval(() => {
       this.updateLastUpdateTime();
-    }, this.updateTimerRate)
+    }, this.updateTimerRate);
     this.reachabilityChecker = setInterval(() => {
       this.refreshThing();
-    }, this.refreshAvailabilityRate)
+    }, this.refreshAvailabilityRate);
   },
   methods: {
-    updateLastUpdateTime(){
+    updateLastUpdateTime() {
       this.lastUpdate = new Date();
-      this.lastReachabilityTime = dateHelper.timeSince(this.lastUpdate)
+      this.lastReachabilityTime = dateHelper.timeSince(this.lastUpdate);
     },
-    lastSetup(thing){
-      window.addEventListener('popstate', function (event) {
-	    // The URL changed...
+    lastSetup(thing) {
+      window.addEventListener("popstate", function (event) {
+        // The URL changed...
         let propertyNames = Object.keys(thing.properties);
         console.log("ajssa ", propertyNames);
         propertyNames.forEach((property, index, array) => {
           if (thing.properties[property].observable === true) {
-                  thing.unobserveProperty(property);
+            thing.unobserveProperty(property);
           }
         });
         this.thing = {};
         this.thingServient = {};
       });
     },
-    
+
     showInteractions(thing) {
       this.updateLastUpdateTime();
-      let td = thing.getThingDescription(); 
+      let td = thing.getThingDescription();
 
       let properties = td.properties;
 
@@ -255,15 +248,15 @@ export default {
         propertyNames.forEach(async (property, index, array) => {
           try {
             // this might not be necessary: (because we can check if we should display via specialProperties)
-              let consumedProperty = await thing.readProperty(property);
-              console.log("consumed property: ", consumedProperty);
-              properties[property]["consumedProperty"] = consumedProperty;  // why do we have a consumedProperty?
-              this.availability = "available" // if it reaches here, it can reach it.
-              if (properties[property].observable === true) {
-                thing.observeProperty(property, (data) => {       
-                  this.thing.properties[property]["consumedProperty"] = data;
-                });
-              }
+            let consumedProperty = await thing.readProperty(property);
+            console.log("consumed property: ", consumedProperty);
+            properties[property]["consumedProperty"] = consumedProperty; // why do we have a consumedProperty?
+            this.availability = "available"; // if it reaches here, it can reach it.
+            if (properties[property].observable === true) {
+              thing.observeProperty(property, (data) => {
+                this.thing.properties[property]["consumedProperty"] = data;
+              });
+            }
           } catch (err) {
             // this error happens when we cannot communicate with a thing. That is, we cannot read a property.
             console.log("err ", err);
@@ -281,7 +274,7 @@ export default {
       // To be created once all consumed properties have been read
       readAllProperties
         .then(() => {
-          console.log("setting the thing object with functionality")
+          console.log("setting the thing object with functionality");
           this.availability = "available";
 
           //this.availability = "available";
@@ -294,42 +287,34 @@ export default {
           console.log("there was an error", error);
           //this.availability = "unavailable";
         });
-
     },
     listenToEventIfTrue(e, eventName, state) {
       if (state === true && !this.eventSubscriptions[eventName]) {
         this.eventSubscriptions[eventName] = eventName;
-        this.thing.subscribeEvent(
-          eventName,
-          async function (data) {
+        this.thing
+          .subscribeEvent(eventName, async function (data) {
             //console.log('Event "' + evnt + '"');
             window.alert("event: " + data);
-          }).then((sub, ss) => {
+          })
+          .then((sub, ss) => {
             console.log("Subscribed for event: " + eventName);
-            
           })
           .catch((error) => {
             console.log(eventName);
             window.alert("Event " + evnt + " error\nMessage: " + error);
-          }
-        );
+          });
       } else if (state === false && this.eventSubscriptions[eventName]) {
         console.log("Try to unsubscribing for event: " + eventName);
-        this.eventSubscriptions[eventName] 
-        this.thing.unsubscribeEvent(
-          eventName,
-          async function (data) {
-
-          }).then((sub, ss) => {
+        this.eventSubscriptions[eventName];
+        this.thing
+          .unsubscribeEvent(eventName, async function (data) {})
+          .then((sub, ss) => {
             this.eventSubscriptions[eventName] = undefined;
-            
           })
           .catch((error) => {
             console.log(eventName);
             window.alert("Event " + evnt + " error\nMessage: " + error);
-          }
-        );
-                            
+          });
       }
     },
     refreshThing() {
@@ -338,7 +323,10 @@ export default {
     },
 
     consumeProperty(property) {
-      console.log("Read a specific property, again, so it can be updated manually",property);
+      console.log(
+        "Read a specific property, again, so it can be updated manually",
+        property
+      );
       this.thing.readProperty(property).then((updatedProperty) => {
         this.thing.properties[property]["consumedProperty"] = updatedProperty;
         console.log("updated prop: ", updatedProperty);
@@ -346,14 +334,13 @@ export default {
       });
     },
     consumeAction(action, input) {
-
       this.thing
         .invokeAction(action, input)
         .then((res) => {
           if (res) {
             console.log(res);
             window.alert("Executed successfully.");
-          } 
+          }
         })
         .catch((err) => {
           window.alert(err);
@@ -368,12 +355,12 @@ export default {
 </script>
 
 <style lang="css">
-
 .wotcard {
-  
-  box-shadow: 0 1px 5px rgb(0 0 0 / 20%), 0 2px 2px rgb(0 0 0 / 14%), 0 3px 1px -2px rgb(0 0 0 / 12%);
+  box-shadow: 0 1px 5px rgb(0 0 0 / 20%), 0 2px 2px rgb(0 0 0 / 14%),
+    0 3px 1px -2px rgb(0 0 0 / 12%);
   border-radius: 4px;
-  font-family: "Roboto", "-apple-system", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-family: "Roboto", "-apple-system", "Helvetica Neue", Helvetica, Arial,
+    sans-serif;
   font-size: 16px;
   line-height: 1.15;
 }
@@ -400,7 +387,6 @@ export default {
   flex-grow: 1;
   flex-direction: column;
   align-items: flex-end;
-
 }
 
 .wotcard .header .main-title {

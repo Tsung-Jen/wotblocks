@@ -113,7 +113,9 @@
         size="sm"
         color="green"
         @click="consumeAction(actionName, propvals)"
-      >{{actionName}}</button>
+      >
+        {{ actionName }}
+      </button>
       <!-- Actually, as far as I know, if an action has an input, it is ALWAYS of type object-->
       <div v-if="actionObj.input.type == 'object'">
         <div
@@ -142,28 +144,27 @@
         size="sm"
         color="green"
         @click="consumeAction(actionName, propvals)"
-      >{{actionName}}</button>
+      >
+        {{ actionName }}
+      </button>
       <!-- Actually, as far as I know, if an action has an input, it is ALWAYS of type object-->
-        <div
-          v-for="(uriVariable, index) in actionObj.uriVariables"
-          :key="index"
-        >
-          <WotBlockAction
-            :propvals="propvals"
-            :actionName="index"
-            :actionObj="uriVariable"
-            :index="index"
-          />
-        </div>
+      <div v-for="(uriVariable, index) in actionObj.uriVariables" :key="index">
+        <WotBlockAction
+          :propvals="propvals"
+          :actionName="index"
+          :actionObj="uriVariable"
+          :index="index"
+        />
+      </div>
     </div>
   </div>
 </template>
 
 <script>
-import BaseSelect from "../Atoms/BaseSelect.vue"
-import BaseInput from "../Atoms/BaseInput.vue"
-import BaseSlider from "../Atoms/BaseSlider.vue"
-import WotState from "../Atoms/WotState.vue"
+import BaseSelect from "../Atoms/BaseSelect.vue";
+import BaseInput from "../Atoms/BaseInput.vue";
+import BaseSlider from "../Atoms/BaseSlider.vue";
+import WotState from "../Atoms/WotState.vue";
 
 export default {
   name: "WotBlockAction",
@@ -207,8 +208,8 @@ export default {
 };
 </script>
 
-<style >
-.wotcard__action .full-width{
+<style>
+.wotcard__action .full-width {
   width: 100%;
   border-width: 0px;
   padding: 8px;
@@ -218,29 +219,29 @@ export default {
   color: #2aaa50;
 }
 
-.wotcard__action .full-width:hover{
-  background-color:  #4caf50;
+.wotcard__action .full-width:hover {
+  background-color: #4caf50;
   cursor: pointer;
   color: #444;
   font-weight: 700;
 }
 
-.wotcard__action .full-width:before{
-    content: "\f144  ";
-    font-family: "FontAwesome";
+.wotcard__action .full-width:before {
+  content: "\f144  ";
+  font-family: "FontAwesome";
 }
 
 .wotcard__action-side {
   max-width: 80px;
 }
 
-.wotbar__caption{
+.wotbar__caption {
   font-size: 14px;
   color: #888;
   padding-bottom: 8px;
 }
 
-.wotbar_action-header{
+.wotbar_action-header {
   padding-top: 10px;
   padding-bottom: 4px;
 }

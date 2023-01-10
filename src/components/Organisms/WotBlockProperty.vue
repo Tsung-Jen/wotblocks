@@ -19,68 +19,67 @@
     </div>
     <div v-else>
       <div v-if="propertyType == 'integer'" class="wotbar">
-          <div class="wotbar__label">
-              <UIPropertyRefresh
-                :objectProperties="objectProperties"
-                :propertyName="propertyName"
-                @click="consumeProperty(propertyName)"
-            />
-          </div>
-              
-          <div
-            class="wotbar__meter"
-            v-if="
-              Object.prototype.hasOwnProperty.call(
-                objectProperties,
-                'minimum'
-              ) &&
-              Object.prototype.hasOwnProperty.call(objectProperties, 'maximum')
-            "
-          >
-            <WotMeterBar :value="(propertyConsume / objectProperties.maximum) * 100" :label="''+propertyConsume"></WotMeterBar> 
-           </div>
-           <div v-else>
-             {{propertyConsume}}
-           </div>
+        <div class="wotbar__label">
+          <UIPropertyRefresh
+            :objectProperties="objectProperties"
+            :propertyName="propertyName"
+            @click="consumeProperty(propertyName)"
+          />
+        </div>
+
+        <div
+          class="wotbar__meter"
+          v-if="
+            Object.prototype.hasOwnProperty.call(objectProperties, 'minimum') &&
+            Object.prototype.hasOwnProperty.call(objectProperties, 'maximum')
+          "
+        >
+          <WotMeterBar
+            :value="(propertyConsume / objectProperties.maximum) * 100"
+            :label="'' + propertyConsume"
+          ></WotMeterBar>
+        </div>
+
+        <div v-else>
+          {{ propertyConsume }}
+        </div>
       </div>
       <div v-if="propertyType == 'number'">
-              <UIPropertyRefresh
-                :objectProperties="objectProperties"
-                :propertyName="propertyName"
-                @click="consumeProperty(propertyName)"
-            />
-              {{ propertyConsume }}
-            
+        <UIPropertyRefresh
+          :objectProperties="objectProperties"
+          :propertyName="propertyName"
+          @click="consumeProperty(propertyName)"
+        />
+        {{ propertyConsume }}
       </div>
       <div v-if="propertyType == 'string'">
-            <!-- if it is readOnly -->
-              <UIPropertyRefresh
-                :objectProperties="objectProperties"
-                :propertyName="propertyName"
-                @click="consumeProperty(propertyName)"
-            />{{ propertyConsume }}
+        <!-- if it is readOnly -->
+        <UIPropertyRefresh
+          :objectProperties="objectProperties"
+          :propertyName="propertyName"
+          @click="consumeProperty(propertyName)"
+        />{{ propertyConsume }}
       </div>
       <div v-if="propertyType == 'boolean'" class="wotbar">
-              <UIPropertyRefresh
-                class="wotbar__label"
-                :objectProperties="objectProperties"
-                :propertyName="propertyName"
-                @click="consumeProperty(propertyName)"
-            />
-             {{propertyConsume}}
+        <UIPropertyRefresh
+          class="wotbar__label"
+          :objectProperties="objectProperties"
+          :propertyName="propertyName"
+          @click="consumeProperty(propertyName)"
+        />
+        {{ propertyConsume }}
       </div>
       <div v-if="propertyType == 'array'" class="wotbar">
-            <!-- if it is readOnly -->
-              <UIPropertyRefresh
-              class="wotbar__label"
-                :objectProperties="objectProperties"
-                :propertyName="propertyName"
-                @click="consumeProperty(propertyName)"
-              />
-              <div class="wotbar__meter">
-                  {{propertyConsume}}
-              </div>
-              
+        <!-- if it is readOnly -->
+        <UIPropertyRefresh
+          class="wotbar__label"
+          :objectProperties="objectProperties"
+          :propertyName="propertyName"
+          @click="consumeProperty(propertyName)"
+        />
+        <div class="wotbar__meter">
+          {{ propertyConsume }}
+        </div>
       </div>
     </div>
     <div v-if="propertyType == 'object'">
@@ -138,9 +137,9 @@
 </template>
 
 <script>
-import BaseSelect from "../Atoms/BaseSelect.vue"
-import WotState from "../Atoms/WotState.vue"
-import WotMeterBar from "../Atoms/WotMeterBar.vue"
+import BaseSelect from "../Atoms/BaseSelect.vue";
+import WotState from "../Atoms/WotState.vue";
+import WotMeterBar from "../Atoms/WotMeterBar.vue";
 import UIPropertyRefresh from "./../Molecules/UIPropertyRefresh.vue";
 
 export default {
@@ -192,20 +191,20 @@ export default {
 };
 </script>
 
-<style >
+<style>
 .wotbar-minWidth {
   min-width: 150px;
 }
 
-.wotbar{
-    display: flex;
+.wotbar {
+  display: flex;
 
-    padding: 4px;
+  padding: 4px;
 }
 .wotbar__label {
-    width: 30%;
+  width: 30%;
 }
-.wotbar__meter{
-    width: 70%;
+.wotbar__meter {
+  width: 70%;
 }
 </style>

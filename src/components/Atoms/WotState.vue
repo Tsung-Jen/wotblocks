@@ -5,7 +5,10 @@
       class="input"
       type="checkbox"
       :checked="checked"
-      @change="$emit('update:checked', $event.target.checked); $emit('onStateChanged', checked)"
+      @change="
+        $emit('update:checked', $event.target.checked);
+        $emit('onStateChanged', checked);
+      "
     />
     <span class="switch"></span>
     <span class="label">{{ label }}</span>

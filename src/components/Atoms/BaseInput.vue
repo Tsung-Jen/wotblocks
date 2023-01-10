@@ -1,21 +1,25 @@
 <template>
-  <input v-bind="$attrs" :value="modelValue" :placeholder="label" @input="$emit('update:modelValue', $event.target.value)"/>
+  <input
+    v-bind="$attrs"
+    :value="modelValue"
+    :placeholder="label"
+    @input="$emit('update:modelValue', $event.target.value)"
+  />
 </template>
 
 <script>
-  export default {
-    props: {
-      label: {
-        type: String,
-        default: ''
-      },
-      modelValue: {
-        type: [String, Number],
-        default: ''
-      }
-    }
-  }
-
+export default {
+  props: {
+    label: {
+      type: String,
+      default: "",
+    },
+    modelValue: {
+      type: [String, Number],
+      default: "",
+    },
+  },
+};
 </script>
 
 <style scoped>
